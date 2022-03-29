@@ -1,0 +1,43 @@
+{
+  "name": "svelte-mp3",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/khandakar227/svelte-mp3.git"
+  },
+  "author": "Khandakar Shakib<xenonknight54@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "next",
+    "@sveltejs/kit": "next",
+    "svelte": "^3.44.0",
+    "svelte-check": "^2.2.6",
+    "svelte-preprocess": "^4.10.1",
+    "tslib": "^2.3.1",
+    "typescript": "~4.6.2"
+  },
+  "type": "module",
+  "dependencies": {
+    "svelte2tsx": "^0.5.6"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    "./.npmignore": "./.npmignore",
+    "./AudioPlayer/AudioPlayer.svelte": "./AudioPlayer/AudioPlayer.svelte",
+    "./AudioPlayer/icons/NextIcon.svelte": "./AudioPlayer/icons/NextIcon.svelte",
+    "./AudioPlayer/icons/NoRepeatIcon.svelte": "./AudioPlayer/icons/NoRepeatIcon.svelte",
+    "./AudioPlayer/icons/PauseIcon.svelte": "./AudioPlayer/icons/PauseIcon.svelte",
+    "./AudioPlayer/icons/PlayIcon.svelte": "./AudioPlayer/icons/PlayIcon.svelte",
+    "./AudioPlayer/icons/PreviousIcon.svelte": "./AudioPlayer/icons/PreviousIcon.svelte",
+    "./AudioPlayer/icons/RepeatIcon.svelte": "./AudioPlayer/icons/RepeatIcon.svelte",
+    "./AudioPlayer/icons/RepeatOnceIcon.svelte": "./AudioPlayer/icons/RepeatOnceIcon.svelte",
+    "./AudioPlayer/icons/ShuffleIcon.svelte": "./AudioPlayer/icons/ShuffleIcon.svelte",
+    "./AudioPlayer/icons": "./AudioPlayer/icons/index.js",
+    "./AudioPlayer/index.css": "./AudioPlayer/index.css",
+    "./AudioPlayer/store": "./AudioPlayer/store.js",
+    "./AudioPlayer/utils": "./AudioPlayer/utils/index.js",
+    "./README.md": "./README.md",
+    ".": "./index.js"
+  },
+  "svelte": "./index.js"
+}
