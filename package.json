@@ -1,6 +1,17 @@
 {
   "name": "svelte-mp3",
+  "description": "A minimalistic, blazingly fast 💥 svelte component for audio player ⏮️▶️⏭️",
   "version": "1.0.0",
+  "keywords": [
+    "svelte",
+    "svelte3",
+    "svelte-mp3",
+    "audio player",
+    "music",
+    "svelte-components",
+    "sveltejs",
+    "svelte audio"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/khandakar227/svelte-mp3.git"

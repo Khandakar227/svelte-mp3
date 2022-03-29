@@ -1,6 +1,6 @@
 # Svelte-mp3
 
-<img src="./docs/Logo.png" alt="Svelte mp3 Logo" />
+<img src="./docs/Logo.jpg" alt="Svelte mp3 Logo" />
 
 This is a light blazingly fast yet simple minimalistic audio playervfor svelte.
 
