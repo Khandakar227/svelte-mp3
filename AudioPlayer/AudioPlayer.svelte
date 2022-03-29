@@ -53,8 +53,8 @@ $: {
         audio.onended = (e) => dispatch("ended", e);
         audio.onloadeddata = (e) => dispatch("loadeddata", e);
         audio.onplaying = (e) => dispatch("playing", e);
-        audio.onstalled = (e) => dispatch("stalled", e);
         audio.onratechange = (e) => dispatch("ratechange", e);
+        audio.onstalled = (e) => dispatch("stalled", e);
         audio.onsuspend = (e) => dispatch("suspend", e);
         audio.ontimeupdate = (e) => dispatch("timeupdate", e);
         audio.onvolumechange = (e) => dispatch("volumechange", e);

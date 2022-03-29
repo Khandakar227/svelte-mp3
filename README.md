@@ -2,7 +2,7 @@
 
 <img src="./docs/Logo.jpg" alt="Svelte mp3 Logo" />
 
-This is a light blazingly fast yet simple minimalistic audio playervfor svelte.
+This is a light blazingly fast yet simple minimalistic audio player for svelte.
 
 ## Installation
     npm install --save svelte-mp3
@@ -53,3 +53,24 @@ RepeatOnceIcon  | svelte component |   |    |
 NoRepeatIcon | svelte component |   |    |
 
 With global stores you can import them from any svelte component to configure audio player.
+
+## Events
+
+svelte mp3 supports almost all events of audio tag. events are forwarded by event dispatcher.
+see [mdn](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio#events).
+name  |
+--- |
+`canplay`  |
+`canplaythrough`  |
+`durationchange`  |
+`ended` |
+`loadeddata` |
+`playing` |
+`ratechange` |
+`stalled` |
+`suspend` |
+`timeupdate` |
+`volumechange` |
+`waiting` |
+
+
