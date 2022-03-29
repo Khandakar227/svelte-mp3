@@ -1,4 +1,5 @@
-<script >export let color = 'black';
+<script lang='ts'>
+    export let color='black'
 </script>
 
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="28" height="28" viewBox="0 0 47.607 47.607" xml:space="preserve" fill={color}>

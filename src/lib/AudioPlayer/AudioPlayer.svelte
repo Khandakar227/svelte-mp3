@@ -1,157 +1,158 @@
-<script >import { onDestroy, createEventDispatcher } from 'svelte';
-import './index.css';
-import { RepeatIcon, NoRepeatIcon, RepeatOnceIcon, ShuffleIcon, NextIcon, PreviousIcon, PlayIcon, PauseIcon } from './icons';
-import { trackIndex, isPlaying, state } from './store';
-import { displayDuration } from './utils';
-const dispatch = createEventDispatcher();
-let className = '';
-export { className as class };
-export let style = '';
-export let volume = isNaN(+(localStorage?.getItem('volume'))) ? 1 : +(localStorage?.getItem('volume')) ?? 1;
-export let shuffle = localStorage?.getItem('shuffle') == 'true' || false;
-export let urls = [];
-export let color = 'black';
-export let loop = localStorage?.getItem('loop') || 'no-repeat';
-export let showTime = true;
-export let showTrackNum = true;
-export let showVolume = true;
-export let disableVolSlider = false;
-export let showShuffle = true;
-export let showNext = true;
-export let showPrev = true;
-$: audio = new Audio(urls[$trackIndex]);
-$: duration = audio.duration || 0;
-let trackprogress = 0;
-let interval = 0; //For requestAnimationFrame
-onDestroy(() => {
-    cancelAnimationFrame(interval);
-});
-$: {
+<script lang='ts'>
+    import {onDestroy, createEventDispatcher} from 'svelte';
+    import './index.css';
+    import {RepeatIcon, NoRepeatIcon, RepeatOnceIcon, ShuffleIcon, NextIcon, PreviousIcon, PlayIcon, PauseIcon } from './icons';
+    import {trackIndex, isPlaying, state } from './store';
+    import {displayDuration} from './utils'
+    
+    const dispatch = createEventDispatcher();
+    
+    let className = '';
+    export {className as class};
+    export let style = '';
+    export let volume= isNaN(+(localStorage?.getItem('volume'))) ? 1: +(localStorage?.getItem('volume')) ?? 1;
+    export let shuffle= localStorage?.getItem('shuffle')=='true' || false;
+    export let urls: string[] = [];
+    export let color = 'black';
+    export let loop: 'repeat-all'|'repeat'|'no-repeat' = localStorage?.getItem('loop') as 'repeat-all'|'repeat'|'no-repeat' || 'no-repeat';
+    export let showTime = true;
+    export let showTrackNum = true;
+    export let showVolume = true;
+    export let disableVolSlider = false;
+    export let showShuffle = true;
+    export let showNext = true;
+    export let showPrev = true;
+    
+    $: audio = new Audio(urls[$trackIndex]);
+    $: duration = audio.duration || 0;
+    let trackprogress = 0;
+    let interval:number=0; //For requestAnimationFrame
+    
+    onDestroy(()=>{
+        cancelAnimationFrame(interval);
+    })
+   
+    $:{
     // Change the state to repeat or not
     state.set(loop);
-    if (typeof (window) != 'undefined')
-        localStorage.setItem('loop', loop.toString());
-}
-$: {
-    // set the audio volume
-    audio.volume = volume;
-    localStorage.setItem('volume', volume.toString());
-}
-//Event dispatch 
-// add meta data when audio loads
-$: audio.onloadedmetadata = (e) => {
-    duration = audio.duration;
-    audio.volume = volume;
-    dispatch('loadedmetadata', e);
-    console.dir(audio);
-};
-$: {
-    if (audio) {
-        audio.oncanplay = (e) => dispatch("canplay", e);
-        audio.oncanplaythrough = (e) => dispatch("canplaythrough", e);
-        audio.ondurationchange = (e) => dispatch("durationchange", e);
-        audio.onended = (e) => dispatch("ended", e);
-        audio.onloadeddata = (e) => dispatch("loadeddata", e);
-        audio.onplaying = (e) => dispatch("playing", e);
-        audio.onratechange = (e) => dispatch("ratechange", e);
-        audio.onstalled = (e) => dispatch("stalled", e);
-        audio.onsuspend = (e) => dispatch("suspend", e);
-        audio.ontimeupdate = (e) => dispatch("timeupdate", e);
-        audio.onvolumechange = (e) => dispatch("volumechange", e);
-        audio.onwaiting = (e) => dispatch("waiting", e);
+    if(typeof(window)!='undefined') localStorage.setItem('loop', loop.toString());
     }
-}
-// start or stop playing audio
-$: {
+   
+    $:{
+        // set the audio volume
+        audio.volume = volume;
+        localStorage.setItem('volume', volume.toString())
+    }
+    
+    // add meta data when audio loads
+    $:audio.onloadedmetadata = (e:Event) =>{
+        duration  = audio.duration
+        audio.volume = volume;
+        dispatch('loadedmetadata', e);
+        console.dir(audio)
+    }
+    
+    //Event dispatch
+    $:{
+    if (audio) {
+        audio.oncanplay = (e:Event) => dispatch("canplay", e)
+        audio.oncanplaythrough = (e:Event) => dispatch("canplaythrough", e);
+        audio.ondurationchange = (e:Event) => dispatch("durationchange", e);
+        audio.onended = (e:Event) => dispatch("ended", e);
+        audio.onloadeddata = (e:Event) => dispatch("loadeddata", e);
+        audio.onplaying = (e:Event) => dispatch("playing", e);
+        audio.onstalled = (e:Event) => dispatch("stalled", e);
+        audio.onratechange = (e:Event) => dispatch("ratechange", e);
+        audio.onsuspend = (e:Event) => dispatch("suspend", e);
+        audio.ontimeupdate = (e:Event) => dispatch("timeupdate", e);
+        audio.onvolumechange = (e:Event) => dispatch("volumechange", e);
+        audio.onwaiting = (e:Event) => dispatch("waiting", e);
+      }
+    }
+
+    // start or stop playing audio
+   $: {
     if ($isPlaying) {
         audio.play().then(() => {
-            //Start tracking progress
-            play();
+        //Start tracking progress
+        play()
         });
-    }
-    else {
+    } else {
         audio.pause();
     }
-}
-const toNextTrack = () => {
-    if ($isPlaying)
-        audio.pause();
+   }
+    
+    const toNextTrack = () => {
+    if($isPlaying) audio.pause()
     if ($trackIndex < urls.length - 1) {
-        trackIndex.set($trackIndex + 1);
+      trackIndex.set($trackIndex + 1);
+    } else {
+      trackIndex.set(0);
     }
-    else {
-        trackIndex.set(0);
-    }
-};
-const toPrevTrack = () => {
-    if ($isPlaying)
-        audio.pause();
+  };
+  
+  const toPrevTrack = () => {
+    if($isPlaying) audio.pause()
     if ($trackIndex - 1 < 0) {
-        trackIndex.set(0);
+      trackIndex.set(0);
+    } else {
+      trackIndex.set($trackIndex - 1);
     }
-    else {
-        trackIndex.set($trackIndex - 1);
-    }
-};
+  };
+
 //Animate track progress and change track after an audio ends
 function play() {
     const timer = () => {
-        cancelAnimationFrame(interval); // Cancel any previous animation
-        trackprogress = audio.currentTime; //set the track progress
+        cancelAnimationFrame(interval);     // Cancel any previous animation
+        trackprogress = audio.currentTime;  //set the track progress
         duration = audio.duration;
         interval = requestAnimationFrame(timer);
         if (audio.ended) {
-            //Repeat all audio one after another
-            if ($state === 'repeat-all') {
-                // if shuffle is true play audio of any random number track
-                if (shuffle)
-                    trackIndex.set(Math.floor(Math.random() * urls.length));
-                else
-                    toNextTrack();
-            }
-            // Repeat the same audio
-            else if ($state === 'repeat')
-                audio.play();
-            // Stop playing
-            else {
-                isPlaying.set(false);
-                cancelAnimationFrame(interval);
-            }
+        //Repeat all audio one after another
+        if ($state === 'repeat-all') {
+            // if shuffle is true play audio of any random number track
+            if (shuffle) trackIndex.set(Math.floor(Math.random()*urls.length));
+            else toNextTrack()
+        }
+        // Repeat the same audio
+        else if ($state === 'repeat') audio.play()
+        // Stop playing
+        else {
+            isPlaying.set(false)
+            cancelAnimationFrame(interval);
+        }
         }
         return () => cancelAnimationFrame(interval);
-    };
-    if (window.requestAnimationFrame)
-        timer();
+        }
+        if (window.requestAnimationFrame) timer()
 }
 // set repeat or not
-function changeState() {
-    if (loop === 'no-repeat')
-        loop = 'repeat';
-    else if (loop === 'repeat')
-        loop = 'repeat-all';
-    else
-        loop = 'no-repeat';
+function changeState () {
+    if (loop === 'no-repeat') loop = 'repeat'
+    else if (loop === 'repeat') loop = 'repeat-all'
+    else loop = 'no-repeat'
 }
 // on range slider input change
-const onScrub = (e) => {
+const onScrub = (e:Event) => {
     cancelAnimationFrame(interval);
-    audio.currentTime = +e.target.value || 0;
-    trackprogress = +e.target.value || 0;
-};
-const changeVolume = (e) => {
-    cancelAnimationFrame(interval);
-    volume = +e.target.value ?? 1;
-};
-const mute = () => {
-    if (audio.volume != 0)
-        volume = 0;
-    else
-        volume = 1;
-};
-const setShuffle = () => {
+    audio.currentTime = +(e.target as HTMLInputElement).value  || 0;
+    trackprogress = +(e.target as HTMLInputElement).value || 0;
+  };
+ 
+ const changeVolume = (e:Event)=> {
+    cancelAnimationFrame(interval)
+    volume = +(e.target as HTMLInputElement).value ?? 1;
+ }
+ 
+ const mute = ()=>{
+    if (audio.volume!= 0) volume=0;
+    else volume = 1;
+ }
+ 
+const setShuffle = ()=> {
     shuffle = !shuffle;
     localStorage.setItem('shuffle', shuffle.toString());
-};
+} 
 </script>
 
 <div class={`player ${className}`} {style}>
