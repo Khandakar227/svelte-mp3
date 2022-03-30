@@ -18,7 +18,13 @@ Inside any *.svelte file:
       urls=['url or src of an audio1','url or src of an audio2']
     />
   ```
-  
+  ## Features
+  1. Previous track/Next track, shuffle, loop buttons
+  2. Shuffle, volume, loop values persistant on local storage.
+  3. Flexible.
+  4. Customizable.
+
+
   ## Props
   Prop | Type | Default | Notes
 --- | --- | --- | ---
@@ -58,6 +64,9 @@ With global stores you can import them from any svelte component to configure au
 
 svelte mp3 supports almost all events of audio tag. events are forwarded by event dispatcher.
 see [mdn](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio#events).
+
+**Note**: To access ```target``` inside of event object you need to write ```event.detail.target``` instead of ```event.target```.
+
 name  |
 --- |
 `canplay`  |

@@ -6,8 +6,7 @@
     import {displayDuration} from './utils'
     
     const dispatch = createEventDispatcher();
-    
-    let className = '';
+    let className ='';
     export {className as class};
     export let style = '';
     export let volume= isNaN(+(localStorage?.getItem('volume'))) ? 1: +(localStorage?.getItem('volume')) ?? 1;
@@ -23,19 +22,14 @@
     export let showNext = true;
     export let showPrev = true;
     
-    $: audio = new Audio(urls[$trackIndex]);
-    $: duration = audio.duration || 0;
-    let trackprogress = 0;
-    let interval:number=0; //For requestAnimationFrame
-    
-    onDestroy(()=>{
-        cancelAnimationFrame(interval);
-    })
-   
+    $: audio = {} as HTMLAudioElement;
+    let duration = 0;
+    $: trackprogress = 0;
+        
     $:{
     // Change the state to repeat or not
-    state.set(loop);
-    if(typeof(window)!='undefined') localStorage.setItem('loop', loop.toString());
+        state.set(loop);
+        if(typeof(window)!='undefined') localStorage.setItem('loop', loop.toString());
     }
    
     $:{
@@ -43,71 +37,19 @@
         audio.volume = volume;
         localStorage.setItem('volume', volume.toString())
     }
-    
-    // add meta data when audio loads
-    $:audio.onloadedmetadata = (e:Event) =>{
-        duration  = audio.duration
+    //Loads the metadata
+    function loadedMetadata (e:Event) {
+        duration = audio.duration;
         audio.volume = volume;
         dispatch('loadedmetadata', e);
-        console.dir(audio)
     }
-    
-    //Event dispatch
-    $:{
-    if (audio) {
-        audio.oncanplay = (e:Event) => dispatch("canplay", e)
-        audio.oncanplaythrough = (e:Event) => dispatch("canplaythrough", e);
-        audio.ondurationchange = (e:Event) => dispatch("durationchange", e);
-        audio.onended = (e:Event) => dispatch("ended", e);
-        audio.onloadeddata = (e:Event) => dispatch("loadeddata", e);
-        audio.onplaying = (e:Event) => dispatch("playing", e);
-        audio.onstalled = (e:Event) => dispatch("stalled", e);
-        audio.onratechange = (e:Event) => dispatch("ratechange", e);
-        audio.onsuspend = (e:Event) => dispatch("suspend", e);
-        audio.ontimeupdate = (e:Event) => dispatch("timeupdate", e);
-        audio.onvolumechange = (e:Event) => dispatch("volumechange", e);
-        audio.onwaiting = (e:Event) => dispatch("waiting", e);
-      }
+    // runs every time audio currentTime changes
+    function timeUpdate (e:Event) {
+        dispatch("timeupdate", e);
+        trackprogress =  audio.currentTime ?? 0;
     }
-
-    // start or stop playing audio
-   $: {
-    if ($isPlaying) {
-        audio.play().then(() => {
-        //Start tracking progress
-        play()
-        });
-    } else {
-        audio.pause();
-    }
-   }
-    
-    const toNextTrack = () => {
-    if($isPlaying) audio.pause()
-    if ($trackIndex < urls.length - 1) {
-      trackIndex.set($trackIndex + 1);
-    } else {
-      trackIndex.set(0);
-    }
-  };
-  
-  const toPrevTrack = () => {
-    if($isPlaying) audio.pause()
-    if ($trackIndex - 1 < 0) {
-      trackIndex.set(0);
-    } else {
-      trackIndex.set($trackIndex - 1);
-    }
-  };
-
-//Animate track progress and change track after an audio ends
-function play() {
-    const timer = () => {
-        cancelAnimationFrame(interval);     // Cancel any previous animation
-        trackprogress = audio.currentTime;  //set the track progress
-        duration = audio.duration;
-        interval = requestAnimationFrame(timer);
-        if (audio.ended) {
+    // runs after an audio has finished playing
+    function ended (e:Event) {
         //Repeat all audio one after another
         if ($state === 'repeat-all') {
             // if shuffle is true play audio of any random number track
@@ -117,45 +59,87 @@ function play() {
         // Repeat the same audio
         else if ($state === 'repeat') audio.play()
         // Stop playing
-        else {
-            isPlaying.set(false)
-            cancelAnimationFrame(interval);
+        else isPlaying.set(false)
+        
+        dispatch('ended', e)
+    }
+    
+    function changeVolume (e:Event) {
+        volume = +(e.target as HTMLInputElement).value ?? 1;
+    }
+    // change loop to repeat, no repeat or repeat all
+    // change loop to repeat, no repeat or repeat all
+    function changeState () {
+        if (loop === 'no-repeat') loop = 'repeat'
+        else if (loop === 'repeat') loop = 'repeat-all'
+        else loop = 'no-repeat'
+    }
+   
+    function mute () {
+        if (audio.volume != 0) volume=0;
+        else volume = 1;
+    }
+    //Scruber. change audio time with the input slider
+    function onScrub (e:Event) {
+        audio.currentTime = +(e.target as HTMLInputElement).value  || 0;
+        trackprogress = +(e.target as HTMLInputElement).value || 0;
+    }
+    // play previous track
+    function toPrevTrack () {
+        if ($trackIndex - 1 < 0) trackIndex.set(0);
+        else trackIndex.set($trackIndex - 1);
+    }
+    // play next track
+    function toNextTrack () {
+       if ($trackIndex < urls.length - 1) trackIndex.set($trackIndex + 1);
+       else trackIndex.set(0);
+    }
+    // enable/disable shuffle
+    function setShuffle () {
+        shuffle = !shuffle;
+        localStorage.setItem('shuffle', shuffle.toString());
+    }
+    
+    $:{
+        if (audio.tagName) {
+            console.dir(audio)
+            if ($isPlaying) audio.play();
+            else audio.pause()
         }
-        }
-        return () => cancelAnimationFrame(interval);
-        }
-        if (window.requestAnimationFrame) timer()
-}
-// set repeat or not
-function changeState () {
-    if (loop === 'no-repeat') loop = 'repeat'
-    else if (loop === 'repeat') loop = 'repeat-all'
-    else loop = 'no-repeat'
-}
-// on range slider input change
-const onScrub = (e:Event) => {
-    cancelAnimationFrame(interval);
-    audio.currentTime = +(e.target as HTMLInputElement).value  || 0;
-    trackprogress = +(e.target as HTMLInputElement).value || 0;
-  };
- 
- const changeVolume = (e:Event)=> {
-    cancelAnimationFrame(interval)
-    volume = +(e.target as HTMLInputElement).value ?? 1;
- }
- 
- const mute = ()=>{
-    if (audio.volume!= 0) volume=0;
-    else volume = 1;
- }
- 
-const setShuffle = ()=> {
-    shuffle = !shuffle;
-    localStorage.setItem('shuffle', shuffle.toString());
-} 
+    }
+    //Event dispatch 
+    const canplay = (e:Event) => dispatch("canplay", e)
+    const canplaythrough = (e:Event) => dispatch("canplaythrough", e)
+    const durationchange = (e:Event) => dispatch("durationchange", e)
+    const loadeddata = (e:Event) => dispatch("loadeddata", e)
+    const playing = (e:Event) => dispatch("playing", e)
+    const stalled = (e:Event) => dispatch("stalled", e)
+    const ratechange = (e:Event) => dispatch("ratechange", e)
+    const suspend = (e:Event) => dispatch("suspend", e)
+    const waiting = (e:Event) => dispatch("waiting", e)
+    const volumechange = (e:Event) => dispatch("volumechange", e)
 </script>
 
-<div class={`player ${className}`} {style}>
+<audio bind:this={audio} class="d-none"
+on:loadedmetadata={loadedMetadata}
+on:timeupdate={timeUpdate}
+on:ended={ended}
+src={urls[$trackIndex]}
+on:canplay={canplay}
+on:canplaythrough={canplaythrough}
+on:durationchange={durationchange}
+on:loadeddata={loadeddata}
+on:playing={playing}
+on:stalled={stalled}
+on:ratechange={ratechange}
+on:suspend={suspend}
+on:waiting={waiting}
+on:volumechange={volumechange}
+
+>
+</audio>
+
+<div {...$$props} class={`player ${className}`} {style}>
 <input class='trackslider'
     max={duration}
     min={0}
@@ -232,4 +216,5 @@ const setShuffle = ()=> {
     align-items: center;
     justify-content: space-between;
 }
+.d-none{ display:none;}
 </style>
