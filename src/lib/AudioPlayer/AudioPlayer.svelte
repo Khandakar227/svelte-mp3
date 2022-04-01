@@ -1,9 +1,10 @@
 <script lang='ts'>
-    import {onDestroy, createEventDispatcher} from 'svelte';
+    import { createEventDispatcher} from 'svelte';
     import './index.css';
     import {RepeatIcon, NoRepeatIcon, RepeatOnceIcon, ShuffleIcon, NextIcon, PreviousIcon, PlayIcon, PauseIcon } from './icons';
     import {trackIndex, isPlaying, state } from './store';
-    import {displayDuration} from './utils'
+    import {displayDuration} from './utils';
+    import {showMediaSession} from './utils/mediaSession';
     
     const dispatch = createEventDispatcher();
     let className ='';
@@ -21,8 +22,18 @@
     export let showShuffle = true;
     export let showNext = true;
     export let showPrev = true;
+    /*
+    * uses mediaSession API to add controls, title cover art on media notification ui if true.
+    * (see: [https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API))
+    */
+    export let enableMediaSession = true;
+    /*
+    * an array of metadata to show on media notification playback (optional)
+    */
+    export let mediaMetadata: MediaMetadataInit [] = []
     
-    $: audio = {} as HTMLAudioElement;
+    export let audio = {} as HTMLAudioElement;
+    export let controller = {} as HTMLElement;
     let duration = 0;
     $: trackprogress = 0;
         
@@ -102,8 +113,18 @@
     
     $:{
         if (audio.tagName) {
-            console.dir(audio)
-            if ($isPlaying) audio.play();
+            if ($isPlaying) {
+            audio.play().then(() => {
+            if (!enableMediaSession) return
+     
+            if (mediaMetadata[$trackIndex])
+                showMediaSession(mediaMetadata[$trackIndex], urls.length);
+            else showMediaSession({
+                title: `Track no. ${$trackIndex+1}`,
+                artist: ''
+            }, urls.length)
+            });
+            }
             else audio.pause()
         }
     }
@@ -159,8 +180,8 @@ on:volumechange={volumechange}
         <div style='text-align:center;font-size:12px;'>{`${$trackIndex+1} / ${urls.length}`}</div>
 {/if}
 
-<div class='control'>
-    <button on:click={() => changeState()} >
+<div class='control' bind:this={controller}>
+    <button name="repeat" on:click={() => changeState()} >
         {#if $state === 'repeat-all'}
             <RepeatIcon {color}/>
         {:else if $state === 'repeat'}
@@ -169,33 +190,33 @@ on:volumechange={volumechange}
         {/if}
     </button>
 {#if showShuffle}    
-    <button on:click={()=>setShuffle()} style="background-color: {shuffle ? '#ff726f':''}">
+    <button name="shuffle" on:click={()=>setShuffle()} style="background-color: {shuffle ? '#ff726f':''}">
         <ShuffleIcon {color}/>
     </button>
 {/if}
 {#if showPrev}
-    <button on:click={()=> toPrevTrack()}>
+    <button name="previous-track" on:click={()=> toPrevTrack()}>
     <PreviousIcon {color}/>
     </button>
 {/if}   
     {#if $isPlaying}
-         <button class='play' on:click={() => isPlaying.set(false)}>
+         <button name="pause" class='play' on:click={() => isPlaying.set(false)}>
             <PauseIcon {color}/>
         </button>
     {:else}
-        <button class='play' on:click={() => isPlaying.set(true)}>
+        <button name="play" class='play' on:click={() => isPlaying.set(true)}>
             <PlayIcon {color}/>
         </button>
     {/if}
 
 {#if showNext}
-    <button on:click={()=> toNextTrack()}>
+    <button name="next-track" on:click={()=> toNextTrack()}>
     <NextIcon {color}/>
     </button>
 {/if}
     {#if showVolume}
     <div class="volume">
-        <button on:click={mute}>
+        <button name="speaker" on:click={mute}>
         {#if volume!==0}
             <svg width="15" height="15" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1.5C8 1.31062 7.893 1.13749 7.72361 1.05279C7.55421 0.968093 7.35151 0.986371 7.2 1.1L3.33333 4H1.5C0.671573 4 0 4.67158 0 5.5V9.5C0 10.3284 0.671573 11 1.5 11H3.33333L7.2 13.9C7.35151 14.0136 7.55421 14.0319 7.72361 13.9472C7.893 13.8625 8 13.6894 8 13.5V1.5ZM3.8 4.9L7 2.5V12.5L3.8 10.1C3.71345 10.0351 3.60819 10 3.5 10H1.5C1.22386 10 1 9.77614 1 9.5V5.5C1 5.22386 1.22386 5 1.5 5H3.5C3.60819 5 3.71345 4.96491 3.8 4.9ZM10.833 3.95949C10.7106 3.77557 10.4623 3.72567 10.2784 3.84804C10.0944 3.97041 10.0445 4.21871 10.1669 4.40264C11.4111 6.27268 11.4111 8.72728 10.1669 10.5973C10.0445 10.7813 10.0944 11.0296 10.2784 11.1519C10.4623 11.2743 10.7106 11.2244 10.833 11.0405C12.2558 8.90199 12.2558 6.09798 10.833 3.95949Z" fill={color} fill-rule="evenodd" clip-rule="evenodd"></path></svg>
         {:else}
@@ -203,7 +224,7 @@ on:volumechange={volumechange}
         {/if}
         </button>
         {#if !disableVolSlider}
-            <input type='range' max={1} min={0} step={0.1} value={volume} on:input={changeVolume}/>
+            <input name="volume" type='range' max={1} min={0} step={0.1} value={volume} on:input={changeVolume}/>
         {/if}
     </div>
     {/if}

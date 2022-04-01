@@ -26,22 +26,136 @@ Inside any *.svelte file:
 
 
   ## Props
-  Prop | Type | Default | Notes
---- | --- | --- | ---
-`class` | String | empty string | Any global class name for styling your player
-`color` | String | 'black' | coloring the outlines and buttons
-`disableVolSlider`  | Boolean | false | Removes volume control slider if true 
-`loop`  | 'repeat-all', 'repeat', 'no-repeat' | 'no-repeat' | playback same audio every time or all audio in a loop.
-`showNext`  | Boolean | true  | hides next button if false.
-`showPrev`  | Boolean | true  | hides previous button if false.
-`showTime`  | Boolean | true  | display current time and duration of an audio.
-`showTrackNum`  | Boolean | true  | display currently playing track number.
-`showShuffle` | Boolean | true  | display shuffle button if true.
-`showVolume`  | Boolean | true  | display speaker icon and volume control slider if true.
-`shuffle` | Boolean | true  | playback random track number if true.
-`style` |  String | empty string  | ---
-`urls`  | String [] | []  | array of audio source/url
-`volume`  | Number  | 1 | value between 0 to 1.
+ 
+### `bind:controller`
+
+A way to interact with controller instance.
+- _type:_  `HTMLElement`
+- _default:_ ` {}`
+- 
+```svelte
+<script>
+...
+let controller: HTMLElement = {};
+$:console.dir(controller) // Output DOM element object
+</script>
+
+<AudioPlayer {url} bind:controller={controller}/>
+```
+
+### `bind:audio`
+
+A way to interact with audio instance.
+- _type:_ ` HTMLAudioElement `
+- _default:_ `{}`
+- 
+```svelte
+<script>
+...
+let audio: HTMLMediaElement = {};
+$:console.dir(audio) // Output audio element object
+</script>
+
+<AudioPlayer {url} bind:audio={audio}/>
+```
+
+### `class`
+
+Any global class name for styling your player
+- _type:_ `string`
+- _default:_ empty string 
+
+
+### `disableVolSlider`
+
+Removes volume control slider if true.
+- _type:_ `boolean`
+- _default:_ `false`
+
+### `color`
+
+coloring the outlines and buttons
+- _type:_ `string`
+- _default:_ `'black'`
+
+### `enableMediaSession`
+
+If true, lets users control playback of media through user-agent defined interface elements (media notification). Interaction with these elements triggers action handlers in the web page, playing the media. See: [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API)
+- _type:_ `boolean`
+- _default:_ `true`
+
+### `loop`
+
+playback same audio every time or all audio in a loop.
+- _type:_ ` 'repeat-all', 'repeat', 'no-repeat'` 
+- _default:_ ` 'no-repeat' `
+
+### `mediaMetadata`
+
+An array of MediaMetadata which lets a web site provide rich metadata to the platform UI for media that is playing. This metadata includes the title, artist (creator) name, album (collection), and artwork. The platform can show this metadata in media centers, notifications, device lockscreens, etc. See: [MDN](https://developer.mozilla.org/en-US/docs/Web/API/MediaMetadata)
+- _type:_ `MediaMetadataInit []`
+- _default:_ ` [] `
+
+### `showNext`
+
+hides next button if false.
+- _type:_ `boolean`
+- _default:_ `true`
+
+### `showPrev`
+
+hides previous button if false.
+- _type:_ `boolean`
+- _default:_ `true`
+
+### `showTime`
+
+display current time and duration of an audio.
+- _type:_ `boolean`
+- _default:_ `true`
+
+### `showTrackNum`
+
+display currently playing track number.
+- _type:_ `boolean`
+- _default:_ `true`
+
+### `showShuffle`
+
+display shuffle button if true.
+- _type:_ `boolean`
+- _default:_ `true`
+
+### `showVolume`
+
+display speaker icon and volume control slider if true.
+- _type:_ `boolean`
+- _default:_ `true`
+- 
+
+### `shuffle`
+
+playback random track number if true.
+- _type:_ `boolean`
+- _default:_ `true`
+
+### `style`
+
+- _type:_ `string`
+- _default:_ empty string
+
+### `urls`
+
+array of audio source/url
+- _type:_ `string []`
+- _default:_ `[]`
+
+
+### `volume`
+
+value between 0 to 1.
+- _type:_ `number`
+- _default:_ `1`
 
 ## API
 name  | type |  default | desc  |
@@ -63,7 +177,7 @@ With global stores you can import them from any svelte component to configure au
 ## Events
 
 svelte mp3 supports almost all events of audio tag. events are forwarded by event dispatcher.
-see [mdn](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio#events).
+see: [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio#events).
 
 **Note**: To access ```target``` inside of event object you need to write ```event.detail.target``` instead of ```event.target```.
 

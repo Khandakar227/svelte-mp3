@@ -7,11 +7,13 @@ let clientSide = false;
 onMount(() => {
     clientSide = true
 })
+
 const urls=[
  'https://filesamples.com/samples/audio/mp3/sample3.mp3',
  'https://filesamples.com/samples/audio/mp3/sample4.mp3',
  'https://filesamples.com/samples/audio/mp3/sample2.mp3',
  ];
+ const mediaMetadata =[{title: "Sample 1", artist: " Shakib (not really)"}];
  function handleClick (trackNum:number) {
     if (trackNum != $trackIndex ) {
         trackIndex.set(trackNum)
@@ -21,10 +23,12 @@ const urls=[
     isPlaying.set(!$isPlaying);
  }
 </script>
-
+<svelte:head>
+   <title>Svelte mp3 Demo</title>
+</svelte:head>
 <h1>Demo for svelte mp3</h1>
 <div class='playlist'>
-    {#each urls as url, i}
+    {#each urls as _, i}
     <p>Sample {i+1}
     <button on:click={() => handleClick(i)}>
     {#if $trackIndex === i && $isPlaying }
@@ -37,7 +41,7 @@ const urls=[
     {/each}
 </div>
 {#if clientSide}
-    <AudioPlayer {urls} />
+    <AudioPlayer {urls} {mediaMetadata} />
  {/if}
  
  <style>

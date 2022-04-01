@@ -13,3 +13,4 @@ export const displayDuration = (time: number) => {
       padZero(time ? sec : 0)
     );
   };
+  
