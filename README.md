@@ -27,131 +27,129 @@ Inside any *.svelte file:
 
   ## Props
  
-### `bind:controller`
+#### `bind:controller`
 
 A way to interact with controller instance.
 - _type:_  `HTMLElement`
 - _default:_ ` {}`
-- 
+
 ```svelte
 <script>
 ...
 let controller: HTMLElement = {};
-$:console.dir(controller) // Output DOM element object
+$:console.dir(controller) // Output: DOM element object
 </script>
 
 <AudioPlayer {url} bind:controller={controller}/>
 ```
 
-### `bind:audio`
+#### `bind:audio`
 
 A way to interact with audio instance.
 - _type:_ ` HTMLAudioElement `
 - _default:_ `{}`
-- 
+
 ```svelte
 <script>
 ...
 let audio: HTMLMediaElement = {};
-$:console.dir(audio) // Output audio element object
+$:console.dir(audio) // Output: audio element object
 </script>
 
 <AudioPlayer {url} bind:audio={audio}/>
 ```
 
-### `class`
+#### `class`
 
 Any global class name for styling your player
 - _type:_ `string`
 - _default:_ empty string 
 
-
-### `disableVolSlider`
+#### `disableVolSlider`
 
 Removes volume control slider if true.
 - _type:_ `boolean`
 - _default:_ `false`
 
-### `color`
+#### `color`
 
 coloring the outlines and buttons
 - _type:_ `string`
 - _default:_ `'black'`
 
-### `enableMediaSession`
+#### `enableMediaSession`
 
 If true, lets users control playback of media through user-agent defined interface elements (media notification). Interaction with these elements triggers action handlers in the web page, playing the media. See: [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API)
 - _type:_ `boolean`
 - _default:_ `true`
 
-### `loop`
+#### `loop`
 
 playback same audio every time or all audio in a loop.
 - _type:_ ` 'repeat-all', 'repeat', 'no-repeat'` 
 - _default:_ ` 'no-repeat' `
 
-### `mediaMetadata`
+#### `mediaMetadata`
 
 An array of MediaMetadata which lets a web site provide rich metadata to the platform UI for media that is playing. This metadata includes the title, artist (creator) name, album (collection), and artwork. The platform can show this metadata in media centers, notifications, device lockscreens, etc. See: [MDN](https://developer.mozilla.org/en-US/docs/Web/API/MediaMetadata)
 - _type:_ `MediaMetadataInit []`
 - _default:_ ` [] `
 
-### `showNext`
+#### `showNext`
 
 hides next button if false.
 - _type:_ `boolean`
 - _default:_ `true`
 
-### `showPrev`
+#### `showPrev`
 
 hides previous button if false.
 - _type:_ `boolean`
 - _default:_ `true`
 
-### `showTime`
+#### `showTime`
 
 display current time and duration of an audio.
 - _type:_ `boolean`
 - _default:_ `true`
 
-### `showTrackNum`
+#### `showTrackNum`
 
 display currently playing track number.
 - _type:_ `boolean`
 - _default:_ `true`
 
-### `showShuffle`
+#### `showShuffle`
 
 display shuffle button if true.
 - _type:_ `boolean`
 - _default:_ `true`
 
-### `showVolume`
+#### `showVolume`
 
 display speaker icon and volume control slider if true.
 - _type:_ `boolean`
 - _default:_ `true`
-- 
 
-### `shuffle`
+#### `shuffle`
 
 playback random track number if true.
 - _type:_ `boolean`
 - _default:_ `true`
 
-### `style`
+#### `style`
 
 - _type:_ `string`
 - _default:_ empty string
 
-### `urls`
+#### `urls`
 
 array of audio source/url
 - _type:_ `string []`
 - _default:_ `[]`
 
 
-### `volume`
+#### `volume`
 
 value between 0 to 1.
 - _type:_ `number`

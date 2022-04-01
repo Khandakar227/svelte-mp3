@@ -1,7 +1,11 @@
 # Changelog
 =======
+### 1.1.1
+  Release April 2, 2022
+  
+Updated readme.
 
-## 1.1.2
+### 1.1.0
   Release April 1, 2022
 
 1. mediaSession API added. Implemented rich playback notification UI.
