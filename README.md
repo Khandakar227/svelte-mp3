@@ -4,6 +4,7 @@
 
 This is a light blazingly fast yet simple minimalistic audio player for svelte.
 
+**[Demo](https://svelte-mp3.netlify.app)**
 ## Installation
     npm install --save svelte-mp3
 
