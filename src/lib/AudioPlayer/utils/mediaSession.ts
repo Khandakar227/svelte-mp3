@@ -1,7 +1,7 @@
 import {get} from 'svelte/store'
 import {isPlaying, trackIndex} from '../store';
 
-export const showMediaSession = (metadata:MediaMetadataInit, numOfTracks: number) => {
+export const showMediaSession = (metadata:MediaMetadataInit, numOfTracks: number, audio:HTMLAudioElement) => {
   if (!('mediaSession' in navigator)) return
   
   navigator.mediaSession.metadata = new MediaMetadata(metadata);
@@ -27,5 +27,8 @@ export const showMediaSession = (metadata:MediaMetadataInit, numOfTracks: number
     const tI = get(trackIndex);
     if (tI < numOfTracks - 1) trackIndex.set(tI + 1);
     else trackIndex.set(0);
-  })
+  });
+  navigator.mediaSession.setActionHandler('seekto', function(e:any) {
+    audio.currentTime = e.seekTime;
+  });
 }

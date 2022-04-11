@@ -56,8 +56,8 @@
     }
     // runs every time audio currentTime changes
     function timeUpdate (e:Event) {
-        dispatch("timeupdate", e);
         trackprogress =  audio.currentTime ?? 0;
+        dispatch("timeupdate", e);
     }
     // runs after an audio has finished playing
     function ended (e:Event) {
@@ -93,7 +93,7 @@
     //Scruber. change audio time with the input slider
     function onScrub (e:Event) {
         audio.currentTime = +(e.target as HTMLInputElement).value  || 0;
-        trackprogress = +(e.target as HTMLInputElement).value || 0;
+        trackprogress = audio.currentTime ?? 0;
     }
     // play previous track
     function toPrevTrack () {
@@ -118,11 +118,11 @@
             if (!enableMediaSession) return
      
             if (mediaMetadata[$trackIndex])
-                showMediaSession(mediaMetadata[$trackIndex], urls.length);
+                showMediaSession(mediaMetadata[$trackIndex], urls.length, audio);
             else showMediaSession({
                 title: `Track no. ${$trackIndex+1}`,
                 artist: ''
-            }, urls.length)
+            }, urls.length, audio)
             });
             }
             else audio.pause()
@@ -142,6 +142,7 @@
 </script>
 
 <audio bind:this={audio} class="d-none"
+prefetch="auto"
 on:loadedmetadata={loadedMetadata}
 on:timeupdate={timeUpdate}
 on:ended={ended}

@@ -42,7 +42,7 @@ const urls=[
     {/each}
 </div>
 {#if clientSide}
-    <AudioPlayer {urls} {mediaMetadata} />
+    <AudioPlayer {urls} {mediaMetadata}/>
  {/if}
  
  <style>

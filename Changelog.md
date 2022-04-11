@@ -1,9 +1,14 @@
 # Changelog
 =======
+### 1.1.2 
+  Relase April 12, 2022
+  
+  Updated Readme.
+  
 ### 1.1.1
   Release April 2, 2022
   
-Updated readme.
+Updated Readme.
 
 ### 1.1.0
   Release April 1, 2022
