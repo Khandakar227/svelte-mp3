@@ -25,6 +25,7 @@ const urls=[
 </script>
 <svelte:head>
    <title>Svelte mp3 Demo</title>
+   <meta name="description" content="This is a demo for svelte audio player package" />
 </svelte:head>
 <h1>Demo for svelte mp3</h1>
 <div class='playlist'>
@@ -45,12 +46,16 @@ const urls=[
  {/if}
  
  <style>
+ .playlist {
+ max-width: 768px;
+ margin: 0 auto;
+ }
  .playlist p {
- padding: 5px;
- border-bottom: 1px solid black;
- display: flex;
- align-items:center;
- justify-content: space-between;
+     padding: 5px;
+     border-bottom: 1px solid black;
+     display: flex;
+     align-items:center;
+     justify-content: space-between;
  }
 .playlist button { background: transparent;border:none; outline:none;}
  </style>
